@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management system</title>
+    <!-- BOOTSTRAP -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- ICON -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <!-- FONT -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+        <link rel="shortcut icon" href="./img/logo_inventory-removebg-preview.png" type="image/x-icon">
+    <style>
+        :root {
+            --bg-main: #050c2b;
+            --bg-sidebar: #f3f4f5;
+            --bg-card: #151a2c;
+            --border-color: rgba(255, 255, 255, 0.05);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Inter", sans-serif;
+        }
+
+        body {
+           background: #ffffff;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            background: #08164d;
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 25px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 55px;
+        }
+
+        .sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #ffffff;
+            padding: 15px 18px;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            transition: 0.3s;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .sidebar .nav-link:hover {
+            background: linear-gradient(135deg, #00f5c4, #6d5dfc);
+            color: white;
+            transform: translateX(6px);
+        }
+
+        .sidebar .nav-link.active {
+            background: linear-gradient(135deg, #00f5c4, #6d5dfc);
+            color: white;
+        }
+
+        .logout-link:hover {
+            background: #ff4d6d !important;
+        }
+
+        /* MAIN */
+
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 30px;
+        }
+
+        /* CARDS */
+
+        .stat-card,
+        .table-container {
+            background: var(--bg-card);
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-card {
+            padding: 25px;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 35px;
+            font-weight: 700;
+        }
+
+        /* SEARCH */
+
+        .form-control,
+        .form-select {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: white;
+            height: 52px;
+            border-radius: 14px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background: var(--bg-card);
+            color: white;
+            box-shadow: none;
+            border-color: #6d5dfc;
+        }
+
+        .input-group-text {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: #94a3b8;
+        }
+
+        /* BUTTON */
+
+        .btn-add {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #00f5c4, #6d5dfc);
+            color: white;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-add:hover {
+            transform: scale(1.05);
+        }
+
+        /* TABLE */
+
+        .table-container {
+            padding: 20px;
+        }
+
+        .custom-table th {
+            background: #1f2937 !important;
+            color: #94a3b8;
+            padding: 18px;
+            border-bottom: none;
+        }
+
+        .custom-table td {
+            padding: 18px;
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .custom-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* AVATAR */
+
+        .avatar-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* BADGES */
+
+        .bg-purple-soft {
+            background: rgba(109, 51, 234, 0.15);
+        }
+
+        .text-purple {
+            color: #c084fc;
+        }
+
+        .bg-success-soft {
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .text-success {
+            color: #34d399 !important;
+        }
+
+        .bg-blue-soft {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .text-blue {
+            color: #60a5fa;
+        }
+
+        /* ACTION BUTTON */
+
+        .btn-action {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.04);
+            color: white;
+            transition: 0.3s;
+        }
+
+        .btn-action:hover {
+            background: linear-gradient(135deg, #00f5c4, #6d5dfc);
+        }
+
+        @media(max-width:992px) {
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- SIDEBAR -->
+
+        <div class="sidebar">
+
+            <div>
+
+                <div class="logo">
+                    Inventory
+                </div>
+
+                <nav class="nav flex-column">
+
+                    <a class="nav-link" href="./Dashboard.html">
+                        <i class="bi bi-box-seam-fill"></i>
+                        Dashboard
+                    </a>
+                    <a class="nav-link" href="./product.html">
+                        <i class="bi bi-box-seam-fill"></i>
+                        Products
+                    </a>
+
+                    <a class="nav-link" href="#">
+                        <i class="bi bi-cart-fill"></i>
+                        Orders
+                    </a>
+
+                    <a class="nav-link active" href="">
+                        <i class="bi bi-people-fill"></i>
+                        Users
+                    </a>
+
+                </nav>
+
+            </div>
+        </div>
+        <!-- MAIN -->
+        <div class="main-content">
+            <!-- CARDS -->
+            <div class="row g-4 mb-4">
+
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <span class="stat-label">Total Users</span>
+                        <h2 class="stat-value" id="totalUsers">0</h2>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <span class="stat-label">Active</span>
+                        <h2 class="stat-value text-success" id="activeUsers">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <span class="stat-label">Active</span>
+                        <h2 class="stat-value text-success" id="activeUsers">0</h2>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <span class="stat-label">Active</span>
+                        <h2 class="stat-value text-success" id="activeUsers">0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEARCH -->
+
+            <div class="row g-3 mb-4">
+
+                <div class="col-lg-6">
+
+                    <div class="input-group">
+
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+
+                        <input type="text" class="form-control" placeholder="Search user..." id="searchInput">
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-6 text-lg-end">
+
+                    <button class="btn-add" onclick="addUser()">
+
+                        <i class="bi bi-plus-lg me-2"></i>
+                        Add User
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- TABLE -->
+
+            <div class="table-container">
+
+                <div class="table-responsive">
+
+                    <table class="table table-dark align-middle custom-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Avatar</th>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th class="text-end">Actions</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="userTable">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        // USER DATA
+
+        let users = [
+            {
+                image: "https://scontent.fpnh11-1.fna.fbcdn.net/v/t1.15752-9/684209019_1156580373278854_8882542576257823565_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=9f807c&_nc_eui2=AeEtNjavlPajB09OF-TCxztSRyzvvKTtOXlHLO-8pO05eXemWngv6LYaUfUEFi_SfnyzcRGRgcQP52DgCvNYaIwo&_nc_ohc=EJzrE9bwkwgQ7kNvwHgcC03&_nc_oc=AdoLOHbhqaloImFEB4tgXThOdx0DYZ0RzOvxcvv31d18vqMGfi0qfTV0JFEbPrrbaYY&_nc_zt=23&_nc_ht=scontent.fpnh11-1.fna&_nc_ss=7b2a8&oh=03_Q7cD5QHlgrRqHHnE4VNsTKlvzMgXaWcEUojRMqEcil0meqSWqw&oe=6A339279",
+                name: "Kandara Rachanak",
+                email: "james@company.com",
+                role: "Admin",
+                status: "Active",
+                joined: "15-Mar-2023"
+            },
+            {
+                image: "https://scontent.fpnh11-1.fna.fbcdn.net/v/t1.15752-9/701798783_3319548664889617_1328537316793205056_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=9f807c&_nc_eui2=AeFEssC-elI3G5FX5EWLlCMUeLfZWfMw4X54t9lZ8zDhftlZcMdkuP9-qEf6fNEn5ceBaYP9r0LXw_P2GRSaFMgB&_nc_ohc=HtxNX1r-8UMQ7kNvwFigwoY&_nc_oc=Adocr3eQbXll6YgtacgZmj6cIT7v6Povh-UraESHJc5eC2ffvhbQXubbrvNxuJai05w&_nc_zt=23&_nc_ht=scontent.fpnh11-1.fna&_nc_ss=7b2a8&oh=03_Q7cD5QHSNsm5dSMk8e04lm0nhv9_jm-OojbjRl5QqyI0Ap0xtw&oe=6A338BBB",
+                name: "Pich Sothearith",
+                email: "sarah@company.com",
+                role: "Manager",
+                status: "Active",
+                joined: "20-Apr-2023"
+            },
+            {
+                image: "https://scontent.fpnh11-2.fna.fbcdn.net/v/t1.15752-9/700997165_987771373903710_3503284870572703571_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=9f807c&_nc_eui2=AeHxHbsAtCfWa_bmA_8MUv2narC5wKuLxYlqsLnAq4vFidW5WJlE4dlvJRfHMKGNoJzkf_sDVjfQ_w4JIB8082c3&_nc_ohc=8jSdiLMvHRAQ7kNvwFNjFIQ&_nc_oc=AdrNNqjgae8QO_n13dh6Sw-wDpX1xf2POxaw6mn3pJ57St5F7gatXDXbNWEzwsp7X3E&_nc_zt=23&_nc_ht=scontent.fpnh11-2.fna&_nc_ss=7b2a8&oh=03_Q7cD5QG0tbCiGtRY7jZ7FkeB_cY8JxwIHOK5NYBOEVkOOMMmqw&oe=6A338741",
+                name: "VICHNA",
+                email: "sarah@company.com",
+                role: "Manager",
+                status: "Active",
+                joined: "20-Apr-2023"
+            }
+        ];
+        // TABLE BODY
+        const tableBody =
+            document.getElementById("userTable");
+        // RENDER USERS
+        function renderUsers() {
+            tableBody.innerHTML = "";
+            users.forEach((user, index) => {
+                tableBody.innerHTML += `    
+            <tr>
+                    <td>
+                        <img src="${user.image}"
+                            class="avatar-img">
+                    </td>
+                    <td class="fw-semibold">
+                        ${user.name}
+                        <br>
+                        <small class="text-muted fw-normal">
+                            ${user.email}
+                        </small>
+                    </td>
+                    <td>
+                        <span class="badge bg-blue-soft text-blue">
+                            ${user.role}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge bg-success-soft text-success">
+                            ${user.status}
+                        </span>
+                    </td>
+                    <td class="text-muted small">
+                        ${user.joined}
+                    </td>
+                    <td class="text-end">
+                        <button
+                            class="btn-action me-2"
+                            onclick="editUser(${index})"
+                        >
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <button
+                            class="btn-action text-danger"
+                            onclick="deleteUser(${index})"
+                        >
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                `;
+            });
+            updateCards();
+        }
+        renderUsers();
+        // UPDATE CARDS
+        function updateCards() {
+            document.getElementById("totalUsers")
+                .innerText = users.length;
+            let active =
+                users.filter(
+                    user => user.status === "Active"
+                ).length;
+            document.getElementById("activeUsers")
+                .innerText = active;
+        }
+        // ADD USER
+        function addUser() {
+            let name =
+                prompt("Enter user name");
+            let email =
+                prompt("Enter email");
+            let role =
+                prompt("Enter role");
+            let status =
+                prompt("Enter status");
+            if (
+                name &&
+                email &&
+                role &&
+                status
+            ) {
+                users.push({
+                    image:
+                        "https://i.pravatar.cc/100",
+                    name,
+                    email,
+                    role,
+                    status,
+                    joined:
+                        new Date()
+                            .toLocaleDateString()
+                });
+                renderUsers();
+            }
+        }
+        // DELETE USER
+        function deleteUser(index) {
+            if (confirm("Delete this user?")) {
+                users.splice(index, 1);
+                renderUsers();
+            }
+        }
+        // EDIT USER
+        function editUser(index) {
+            let user = users[index];
+            let newName =
+                prompt(
+                    "Edit Name",
+                    user.name
+                );
+            let newEmail =
+                prompt(
+                    "Edit Email",
+                    user.email
+                );
+            let newRole =
+                prompt(
+                    "Edit Role",
+                    user.role
+                );
+            let newStatus =
+                prompt(
+                    "Edit Status",
+                    user.status
+                );
+            if (
+                newName &&
+                newEmail &&
+                newRole &&
+                newStatus
+            ) {
+                user.name = newName;
+                user.email = newEmail;
+                user.role = newRole;
+                user.status = newStatus;
+                renderUsers();
+            }
+        }
+        // SEARCH SYSTEM
+        const searchInput =
+            document.getElementById("searchInput");
+        searchInput.addEventListener("keyup", () => {
+            const value =
+                searchInput.value.toLowerCase();
+            const rows =
+                document.querySelectorAll("#userTable tr");
+            rows.forEach(row => {
+                const text =
+                    row.innerText.toLowerCase();
+                row.style.display =
+                    text.includes(value)
+                        ? ""
+                        : "none";
+            });
+        });
+    </script>
+</body>
+</html>

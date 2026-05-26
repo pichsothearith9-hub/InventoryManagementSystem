@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventory Management system</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="./img/logo_inventory-removebg-preview.png" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Inter", sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: #ffffff;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* HERO VIDEO */
+        .hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-content h1 {
+            font-size: 65px;
+            margin-bottom: 20px;
+        }
+
+        .hero-content p {
+            font-size: 20px;
+            color: #cbd5e1;
+        }   
+
+        /* TOP BUTTONS */
+        .top-buttons {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            z-index: 1000;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+        }
+
+        /* SECTION */
+        .section {
+            width: 90%;
+            margin: auto;
+            padding: 100px 0;
+        }
+
+        /* CARD */
+        .card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            margin-bottom: 80px;
+            background: rgba(7, 6, 6, 0.808);
+            border-radius: 30px;
+            padding: 40px;
+            backdrop-filter: blur(12px);
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all 0.8s ease;
+        }
+
+        .card.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .reverse {
+            flex-direction: row-reverse;
+        }
+
+        .text {
+            flex: 1;
+        }
+
+        .text h2 {
+            font-size: 50px;
+        }
+
+        .text h2 span {
+            color: #38bdf8;
+        }
+
+        .line {
+            width: 120px;
+            height: 4px;
+            background: #38bdf8;
+            margin: 20px 0;
+        }
+
+        .text p {
+            color: #cbd5e1;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+
+        .info {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .info-box {
+            background: #1e293b;
+            padding: 10px 15px;
+            border-radius: 12px;
+        }
+
+        .image-box img {
+            width: 100%;
+            max-width: 350px;
+            border-radius: 25px;
+        }
+
+        /* POPUP */
+        .popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+        }
+
+        .popup.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-card {
+            width: 400px;
+            background: #111827;
+            padding: 30px;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            cursor: pointer;
+            font-size: 25px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: none;
+            background: #1e293b;
+            color: white;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #06b6d4, #3b82f6);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .text{
+            justify-content: center;
+            place-items: center;
+            display: flex;
+            color: green;
+        }
+        .image-box{
+             width: 200px;
+             transition: transform 0.3s ease;
+             cursor: pointer;
+        }
+        .image-box:hover{
+            transform: translateY(-15px);
+        }
+        .image-box img{
+            width:250px;
+            height: 230px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-primary navbar-dark py-3">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Inventory Management System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Location</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" aria-disabled="true">About</a>
+                    </li>
+                    <div class="top-buttons">
+                        <button class="nav-btn" onclick="openPopup('login')">Login</button>
+                        <button class="nav-btn" onclick="openPopup('register')">Register</button>
+                    </div>  
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- TOP BUTTONS -->
+    <!-- HERO VIDEO -->
+    <section class="hero">
+        <img style="width: 100%;" src="https://i.pinimg.com/1200x/4b/24/05/4b2405efa930c886911a0a499dae9e79.jpg" alt="">
+    </section>
+
+    <!-- SECTION -->
+    <section class="section">
+
+        <div class="card reverse">
+            <div class="text">
+                <div class="line"></div>
+                <p>
+                Goods management is the process of organizing, controlling, and monitoring products from the moment they are received
+                until they are sold or distributed. It involves inventory tracking, storage management, quality checking, and proper
+                record keeping to ensure accuracy and efficiency. Good goods management helps reduce losses, prevent overstock or
+                shortages, and improve business performance. It also ensures that customers receive the right products in good condition
+                and on time, which increases trust and satisfaction.
+
+                </p>
+            </div>
+            <div class="image-box">
+                <img src="https://i.pinimg.com/1200x/9f/40/46/9f40464f86d8b3b04851f30f04c7b67d.jpg">
+            </div>
+        </div>
+        <div class="card reverse">
+            <div class="text">
+                <div class="line"></div>
+                <p>Management of imported goods refers to the process of controlling and organizing products that come from foreign
+                countries to ensure they are properly handled from arrival to distribution. It includes customs clearance,
+                transportation, storage, quality inspection, and inventory control. Effective management helps businesses avoid delays,
+                reduce costs, and ensure that goods meet required standards and regulations. It also plays an important role in
+                maintaining supply chain efficiency and customer satisfaction by ensuring that imported products are delivered safely,
+                on time, and in good condition.
+</p>
+            </div>
+            <div class="image-box">
+                <img src="https://i.pinimg.com/736x/65/8f/db/658fdb1bf5e78986f3b6f9c4633e4363.jpg">
+            </div>
+        </div>
+
+        <div class="card reverse">
+            <div class="text">
+                <div class="line"></div>
+                <p>Electronic equipment management is an important process that involves controlling, organizing, and properly maintaining
+                electronic devices to ensure they work efficiently and effectively. It includes inventory management, quality
+                inspection, troubleshooting when problems occur, and updating technology to keep it modern. Good management helps reduce
+                damage, unnecessary costs, and extends the lifespan of the equipment. In addition, it ensures that all electronic
+                devices used in an organization or company operate safely and at high performance.
+
+                </p>
+            </div>
+            <div class="image-box">
+                <img src="https://i.pinimg.com/736x/d7/09/15/d709157fc7b977dd4c30a22c7888133c.jpg">
+            </div>
+        </div>
+    </section>
+
+    <!-- POPUP LOGIN -->
+    <div class="popup" id="loginPopup">
+        <div class="popup-card">
+            <span class="close-btn" onclick="closePopup()">&times;</span>
+            <h2>Login</h2>
+
+            <div class="input-group">
+                <input id="user" placeholder="Username">
+                <input id="pass" type="password" placeholder="Password">
+            </div>
+            <a href="./Dashboard.html">
+            <button class="submit-btn" onclick="login()">Login</button>
+            </a>
+            <p id="msg"></p>
+        </div>
+    </div>
+
+    <script>
+        // SCROLL ANIMATION
+        const cards = document.querySelectorAll(".card");
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add("show");
+                    }, index * 200);
+                }
+            });
+        }, { threshold: 0.2 });
+
+        cards.forEach(c => observer.observe(c));
+
+        // POPUP
+        function openPopup() {
+            document.getElementById("loginPopup").classList.add("active");
+        }
+
+        function closePopup() {
+            document.getElementById("loginPopup").classList.remove("active");
+        }
+
+        // 3 USERS LOGIN SYSTEM
+        const users = [
+            { username: "admin", password: "1234" },
+            { username: "user1", password: "1111" },
+            { username: "user2", password: "2222" }
+        ];
+
+        function login() {
+            const u = document.getElementById("user").value;
+            const p = document.getElementById("pass").value;
+
+            const found = users.find(x => x.username === u && x.password === p);
+
+            if (found) {
+                document.getElementById("msg").innerHTML = "✅ Login Success";
+            } else {
+                document.getElementById("msg").innerHTML = "❌ Wrong account";
+            }
+        }
+    </script>
+</body>
+</html>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"></script>

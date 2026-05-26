@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventory Management System</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Inter, sans-serif;
+        }
+
+        body {
+            background: #0b1220;
+            color: white;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+                width: 260px;
+                height: 100vh;
+                position: fixed;
+                left: 0;
+                top: 0;
+                background: #08164d;
+                padding: 25px;
+            }
+            .logo {
+                font-size: 28px;
+                font-weight: 800;
+                margin-bottom: 40px;
+            }
+            .main{
+                background-color: white;
+                width: 100%;
+                height: auto;
+            }
+            .menu a {
+                display: flex;
+                gap: 10px;
+                padding: 14px;
+                margin-bottom: 10px;
+                color: white;
+                text-decoration: none;
+                border-radius: 12px;
+                transition: .3s;
+            }
+            .menu a:hover {
+                background: linear-gradient(135deg, #00f5c4, #6d5dfc);
+                transform: translateX(6px);
+            }
+            /* MAIN */
+            .main {
+                margin-left: 260px;
+                padding: 25px;
+            }
+
+        /* TOPBAR */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #111827;
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        .search input {
+            width: 100%;
+            background: none;
+            border: none;
+            outline: none;
+            color: white;
+        }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(135deg, #121d40, #1c2550);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* TABLE */
+        .table-section {
+            background: #111827;
+            padding: 20px;
+            border-radius: 20px;
+            overflow: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: left;
+        }
+
+        th {
+            color: #9fb0c2;
+        }
+
+        .status {
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: rgba(0, 245, 196, 0.15);
+            color: #00f5c4;
+        }
+
+        /* BUTTONS */
+        button {
+            cursor: pointer;
+            border: none;
+        }
+
+        .order-btn {
+            padding: 8px 14px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #00f5c4, #6d5dfc);
+            color: white;
+        }
+
+        .delete-btn {
+            padding: 8px 12px;
+            background: #ff4d6d;
+            color: white;
+            border-radius: 8px;
+        }
+
+        /* PRODUCT IMAGE */
+        .product-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+
+        /* NOTIFICATION */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: -300px;
+            background: #111827;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border-left: 4px solid #00f5c4;
+            transition: 0.4s;
+        }
+
+        .notification.show {
+            right: 20px;
+        }
+
+        /* HOVER */
+        tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+            transition: 0.3s;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="notification" id="notification"></div>
+
+    <div class="container">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="logo">Inventory</div>
+
+            <div class="menu">
+                <a href="./Dashboard.html"><i class="fa fa-chart-pie"></i> Dashboard</a>
+                <a href="./product.html"><i class="fa fa-box"></i> Products</a>
+                <a href=""><i class="fa fa-box"></i> Order</a>
+                <a href="./user.html"><i class="fa fa-box"></i> user</a>
+            </div>
+        </div>
+
+        <!-- MAIN -->
+        <div class="main">
+
+            <!-- TOP -->
+            <div class="topbar">
+                <div class="search">
+                    <i class="fa fa-search"></i>
+                    <input id="searchInput" placeholder="Search products...">
+                </div>
+            </div>
+
+            <!-- HERO -->
+            <div class="hero">
+                <h1>Inventory Management System</h1>
+                <p>Modern Apple-style inventory dashboard</p>
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-section">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tableBody"></tbody>
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+
+        /* PRODUCT DATA */
+        const products = [
+            { name: "iPhone 15 Pro Max", price: 1499, img: "https://i.pinimg.com/736x/1a/76/26/1a7626d44c15f3c572ed6399e27ead0d.jpg" },
+            { name: "Samsung S24 Ultra", price: 900, img: "https://i.pinimg.com/736x/24/22/32/24223258deb2711a6cfb6ffe2ba3b5e9.jpg" },
+            { name: "MacBook Pro M3", price: 2499, img: "https://i.pinimg.com/1200x/18/30/7d/18307dfde0f655618d822607bda8c931.jpg" },
+            { name: "AirPods Pro", price: 200, img: "https://i.pinimg.com/736x/88/12/28/88122855d4faa222a3c0ebb2c33e6726.jpg" },
+            { name: "Apple Watch", price: 399, img: "https://i.pinimg.com/1200x/9a/36/03/9a3603193e6add051ae2baf504a723bc.jpg" },
+            { name: "Gaming Mouse", price: 89, img: "https://i.pinimg.com/736x/8e/96/c0/8e96c02e89271b4b0fba86c6dad3deb3.jpg" },
+             { name: "Apple Watch", price: 200, img: "https://i.pinimg.com/1200x/9a/36/03/9a3603193e6add051ae2baf504a723bc.jpg" },
+            { name: "iPad Pro", price: 390, img: "https://i.pinimg.com/1200x/5b/23/53/5b2353e578f90e60f16de47b77f655b5.jpg" },
+            { name: "Gaming Mouse", price: 89, img: "https://i.pinimg.com/736x/8e/96/c0/8e96c02e89271b4b0fba86c6dad3deb3.jpg" },
+            { name: "Keyboard RGB", price: 120, img: "https://i.pinimg.com/736x/df/ed/f8/dfedf8d412bab97eb28be47a02e21892.jpg" },
+            { name: "AeroDock USB Hub", price: 50, img: "https://i.pinimg.com/1200x/66/4c/12/664c12000d9cb128fd4689e7c79ac407.jpg" },
+            { name: "CoolVent Laptop Stand", price: 13, img: "https://i.pinimg.com/736x/eb/b3/f2/ebb3f2fd834de0dc1b9ab725f3067cea.jpg" },
+            { name: "PowerLink Charging Dock", price: 24, img: "https://i.pinimg.com/736x/c9/18/93/c918931076a79a9c01c2d078101d68e5.jpg" },
+            { name: "UltraCarry Laptop Bag", price: 18, img: "https://i.pinimg.com/736x/ae/ca/63/aeca63d2cdd58b23d9af0b4e1e266c9d.jpg" },
+            { name: "FlexiGuard Keyboard Cover", price: 190, img: "https://i.pinimg.com/736x/88/12/28/88122855d4faa222a3c0ebb2c33e6726.jpg" },
+            { name: "NanoMouse Wireless Pro", price: 40, img: "https://i.pinimg.com/1200x/04/6e/16/046e1607085f2ddde993f6c3868db7ab.jpg" },
+            { name: "SkyPad Cooling Pad", price: 899, img: "https://i.pinimg.com/736x/90/e0/ba/90e0ba66345d4429059fbce49a1ecc1a.jpg" },
+            { name: "SmartLink Type-C Adapter", price: 1299, img: "https://i.pinimg.com/736x/89/a1/d2/89a1d216d33425feabec16524127a271.jpg" },
+            { name: "GlideTouch Trackpad Cover", price: 89, img: "https://i.pinimg.com/1200x/c1/a4/35/c1a435ebd767962f1763cf2591600a7f.jpg" },
+            { name: "ProShield Screen Protector", price: 120, img: "https://i.pinimg.com/736x/e2/19/07/e21907f16b4336083204a3ed9c3ec704.jpg" },
+            { name: "Toyota Corolla Toyota Corolla", price: 1499, img: "https://i.pinimg.com/736x/55/61/e9/5561e9d1073945487b3382e73d8c7973.jpg" },
+            { name: "Toyota Camry Toyota Camry", price: 1399, img: "https://i.pinimg.com/736x/b9/c9/a2/b9c9a22952a7febe2b8fff53463e3ac5.jpg" },
+            { name: "Honda Civic Honda Civic", price: 2499, img: "https://i.pinimg.com/736x/d2/ce/cc/d2ceccacfb1fe787896875e824f99db2.jpg" },
+            { name: "Honda Accord Honda Accord", price: 1899, img: "https://i.pinimg.com/736x/91/95/84/919584e06a9030b210ac0d8c03c5a7c7.jpg" },
+            { name: "Ford Mustang Ford Mustang", price: 299, img: "https://i.pinimg.com/1200x/10/00/b4/1000b4e50c92a9bd76a43e0cbff89957.jpg" },
+            { name: "Ford Focus Ford Focus", price: 399, img: "https://i.pinimg.com/736x/a9/f0/24/a9f0248051f3f168a0b202c79f8a2567.jpg" },
+            { name: "BMW 3 Series BMW 3 Series", price: 899, img: "https://i.pinimg.com/1200x/f3/78/6d/f3786d6e52d006ab37102e1a8f59a71e.jpg" },
+            { name: "BMW X5 BMW X5", price: 1299, img: "https://i.pinimg.com/1200x/ff/09/11/ff09110772ffb126b68b057e05143b8c.jpg" },
+            { name: "Mercedes-Benz C-Class Mercedes-Benz C-Class", price: 89, img: "https://i.pinimg.com/736x/f6/fe/22/f6fe22f820617a7ad26b2eaacf9c2d9f.jpg" },
+            { name: "Mercedes-Benz E-Class Mercedes-Benz E-Class", price: 120, img: "https://i.pinimg.com/736x/61/e8/78/61e8785f721e4e389d05324c432987c2.jpg" },
+            { name: "Audi A4 Audi A4", price: 1499, img: "https://i.pinimg.com/1200x/11/52/12/115212b1bd483ae2eb37ad2ca1bdbbbb.jpg" },
+            { name: "Audi Q7 Audi Q7", price: 1399, img: "https://i.pinimg.com/1200x/37/a0/af/37a0aff3f6788360533662a493087491.jpg" },
+            { name: "Nissan Altima Nissan Altima", price: 2499, img: "https://i.pinimg.com/736x/9e/2f/88/9e2f88d33d3f9ecef38d1cee681f57e5.jpg" },
+            { name: "Nissan GT-R Nissan GT-R", price: 1899, img: "https://i.pinimg.com/736x/c9/d0/26/c9d02638aac4f13aa630db43ea9b5422.jpg" },
+            { name: "Tesla Model 3 Tesla Model 3r", price: 299, img: "https://i.pinimg.com/736x/37/65/08/37650882bb83e7474f2b8e8a3518c801.jpg" },
+            { name: "Tesla Model X Tesla Model X", price: 399, img: "https://i.pinimg.com/1200x/02/9b/76/029b76d4c9e8377f2acf22a5c9c72bbb.jpg" },
+            { name: "Hyundai Elantra Hyundai Elantra", price: 899, img: "https://i.pinimg.com/1200x/d5/e4/e9/d5e4e917fcc34e5dabc668bbca6f16bb.jpg" },
+            { name: "Kia Sportage Kia Sportage", price: 1299, img: "https://i.pinimg.com/1200x/35/89/bc/3589bcf7df9a276223a0d817ec2a3872.jpg" },
+            { name: "Chevrolet Camaro Chevrolet Camaro", price: 89, img: "https://i.pinimg.com/1200x/58/5f/70/585f704b10c8c027205e25b070978077.jpg" },
+            { name: "Volkswagen Golf Volkswagen Golf", price: 120, img: "https://i.pinimg.com/736x/07/3b/fb/073bfbcece4bf4bfbd966e194199c705.jpg" },
+            { name: "Nike", price: 1499, img: "https://i.pinimg.com/736x/2a/cf/90/2acf90a5a0aa0c3554f4f60d735b36c0.jpg" },
+            { name: "Adidas", price: 1399, img: "https://i.pinimg.com/736x/2d/d5/67/2dd56763ef4e041ce483639f2d867776.jpg" },
+            { name: "Puma", price: 2499, img: "https://i.pinimg.com/736x/87/65/86/876586f9b44c56ffa8901cf46c2b1608.jpg" },
+            { name: "Reebok", price: 1899, img: "https://i.pinimg.com/1200x/a4/d8/f7/a4d8f761b54994fd5584a0ff57112f71.jpg" },
+            { name: "New Balance", price: 299, img: "https://i.pinimg.com/736x/84/48/a4/8448a47e5dc116a854680e836f2ef554.jpg" },
+            { name: "Vans", price: 399, img: "https://i.pinimg.com/736x/47/cf/2d/47cf2dcc08ddbbf5f456d318cfa19559.jpg" },
+            { name: "Converse", price: 899, img: "https://i.pinimg.com/1200x/9a/36/03/9a3603193e6add051ae2baf504a723bc.jpg" },
+            { name: "Balenciaga", price: 1299, img: "https://i.pinimg.com/1200x/b9/3e/11/b93e11df101f49734a59b0f890921555.jpg" },
+            { name: "Gucci", price: 89, img: "https://i.pinimg.com/1200x/61/33/d9/6133d93b767c82d74e862c65ffdfce45.jpg" },
+            { name: "Prada", price: 120, img: "https://i.pinimg.com/1200x/af/50/0a/af500afa576fd3606f37493155f6e6b6.jpg" },
+            { name: "Asics", price: 1499, img: "https://i.pinimg.com/1200x/c1/6d/93/c16d93d0dafd7bff0d46c48886f6b54e.jpg" },
+            { name: "Skechers", price: 1399, img: "https://i.pinimg.com/1200x/d7/0e/ec/d70eec0e79746889f42e3cfa483fb304.jpg" },
+            { name: "Timberland", price: 2499, img: "https://i.pinimg.com/736x/7d/b5/d4/7db5d4f011031008f2a29b597b5bfb0e.jpg" },
+            { name: "Under Armour", price: 1899, img: "https://i.pinimg.com/1200x/08/2a/92/082a92a50509d71008a468f35ed0f645.jpg" },
+            { name: "Timberland", price: 299, img: "https://i.pinimg.com/736x/7d/b5/d4/7db5d4f011031008f2a29b597b5bfb0e.jpg" },
+            { name: "Dr. Martens", price: 399, img: "https://i.pinimg.com/736x/88/af/bd/88afbd5e98b6f5f570106b37a5eaeb0a.jpg" },
+            { name: "Air Jordan", price: 899, img: "https://i.pinimg.com/736x/65/f5/cf/65f5cfc827c441c89938b88476a2366c.jpg" },
+            { name: "Fila", price: 1299, img: "https://i.pinimg.com/736x/e0/69/50/e06950b3d009b04a66977f4e7a67f417.jpg" },
+            { name: "Salomon", price: 89, img: "https://i.pinimg.com/1200x/66/a3/01/66a3014ef41ca8a5818b7f196403089e.jpg" },
+            { name: "Lacoste", price: 120, img: "https://i.pinimg.com/736x/ba/4f/84/ba4f8460bcf0dc5578aba16687ff0690.jpg" },
+        ];
+
+        /* RENDER PRODUCTS */
+        const tableBody = document.getElementById("tableBody");
+
+        function renderProducts() {
+            tableBody.innerHTML = "";
+
+            products.forEach((p, index) => {
+                tableBody.innerHTML += `
+<tr>
+<td>${index + 1}</td>
+
+<td style="display:flex;align-items:center;gap:10px;">
+<img class="product-img" src="${p.img}">
+${p.name}
+</td>
+
+<td>$${p.price}</td>
+
+<td><span class="status">Available</span></td>
+
+<td>
+<button class="order-btn" onclick="orderProduct(${index})">
+Order
+</button>
+</td>
+</tr>
+`;
+            });
+        }
+
+        renderProducts();
+
+        /* ORDER SYSTEM */
+        let orders = [];
+
+        function orderProduct(index) {
+            const product = products[index];
+
+            let existing = orders.find(o => o.name === product.name);
+
+            if (existing) {
+                existing.qty++;
+            } else {
+                orders.push({ name: product.name, price: product.price, qty: 1 });
+            }
+
+            showNotification(product.name + " ordered!");
+        }
+
+        /* NOTIFICATION */
+        function showNotification(msg) {
+            const n = document.getElementById("notification");
+            n.innerText = msg;
+            n.classList.add("show");
+
+            setTimeout(() => {
+                n.classList.remove("show");
+            }, 2000);
+        }
+
+        /* SEARCH */
+        document.getElementById("searchInput").addEventListener("input", function () {
+            const val = this.value.toLowerCase();
+
+            document.querySelectorAll("#tableBody tr").forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none";
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>
